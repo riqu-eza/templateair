@@ -15,6 +15,7 @@ const Createproperty = () => {
   // Define state for each input field
   const [formData, setFormData] = useState({
     name: "",
+    email:'',
     description: "",
     amenities: "",
     type: "",
@@ -207,6 +208,7 @@ const Createproperty = () => {
       // Reset the form on successful submission
       setFormData({
         name: "",
+        email:"",
         description: "",
         amenities: "",
         type: "",
@@ -243,6 +245,15 @@ const Createproperty = () => {
           type="text"
           name="name"
           value={formData.name}
+          onChange={handleChange}
+          required
+          className="border rounded p-2"
+        />
+        <Input
+          placeholder="Enter property email"
+          type="text"
+          name="email"
+          value={formData.email}
           onChange={handleChange}
           required
           className="border rounded p-2"

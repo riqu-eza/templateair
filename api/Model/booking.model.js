@@ -14,6 +14,9 @@ const bookingSchema = new mongoose.Schema(
       email: { type: String, required: true, match: /.+\@.+\..+/ },
       phone: { type: String, required: true },
     },
+    receipt: {
+      type: Buffer, // Store the PDF as a binary object
+    },
   },
   { timestamps: true }
 );

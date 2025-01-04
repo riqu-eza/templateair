@@ -7,9 +7,26 @@ const Map = ({ isEditable = false, initialPosition, onAddressChange }) => {
   const markerRef = useRef(null);
 
   useEffect(() => {
-    // Initialize the map only when the component mounts
+    // Function to load Google Maps API dynamically
+    const loadGoogleMapsScript = () => {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`;
+        script.async = true;
+        script.defer = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    };
+
     const initMap = () => {
       const defaultPosition = initialPosition || { lat: -1.286389, lng: 36.817223 }; // Default to Nairobi
+
+      if (!window.google || !window.google.maps) {
+        console.error("Google Maps API is not loaded.");
+        return;
+      }
 
       const map = new window.google.maps.Map(mapRef.current, {
         center: defaultPosition,
@@ -25,46 +42,36 @@ const Map = ({ isEditable = false, initialPosition, onAddressChange }) => {
       markerRef.current = marker;
 
       if (isEditable) {
-        // Update location when the marker is dragged
         marker.addListener("dragend", () => {
           const newLat = marker.getPosition().lat();
           const newLng = marker.getPosition().lng();
-
-          // Reverse geocode to get address
+          
           reverseGeocode(newLat, newLng);
-
-          // Pass updated coordinates back to parent component
-          onAddressChange?.({
-            lat: newLat,
-            lng: newLng,
-            address: "", // Placeholder until reverse geocode updates this
-          });
+          onAddressChange?.({ lat: newLat, lng: newLng, address: "" }); // Placeholder
         });
       }
     };
 
-    // Initialize map and marker when Google Maps API is loaded
-    if (window.google && window.google.maps) {
-      initMap();
-    }
+    // Load the Google Maps API script dynamically
+    loadGoogleMapsScript()
+      .then(() => {
+        initMap();
+      })
+      .catch((error) => {
+        console.error("Error loading Google Maps API:", error);
+      });
+
   }, [initialPosition, isEditable, onAddressChange]);
 
-  // Function to reverse geocode latitude and longitude
   const reverseGeocode = (lat, lng) => {
     const geocoder = new window.google.maps.Geocoder();
 
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
       if (status === "OK" && results[0]) {
         const address = results[0].formatted_address;
-
-        // Pass full address back to parent component if callback exists
-        onAddressChange?.({
-          lat,
-          lng,
-          address,
-        });
+        onAddressChange?.({ lat, lng, address });
       } else {
-        console.error("Geocode was not successful for the following reason:", status);
+        console.error("Geocode was not successful:", status);
       }
     });
   };

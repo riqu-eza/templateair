@@ -31,17 +31,15 @@ const Viewall = (data) => {
   // Toggle modal visibility
   const toggleModal = () => setShowModal(!showModal);
 
-//   const startEditingComment = (commentId, currentText) => {
-//     setEditingCommentId(commentId);
-//     setEditCommentText(currentText);
-//   };
+  //   const startEditingComment = (commentId, currentText) => {
+  //     setEditingCommentId(commentId);
+  //     setEditCommentText(currentText);
+  //   };
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(
-          `/api/comment/getrating`
-        );
+        const response = await fetch(`/api/comment/getrating`);
         if (!response.ok) {
           throw new Error("Failed to fetch comments");
         }
@@ -122,32 +120,29 @@ const Viewall = (data) => {
     }
   };
   // Handle comment submission
-//   const handleDeleteComment = async (commentId) => {
-//     try {
-//       const response = await fetch(
-//         `http://localhost:3004/api/comment/delete${_id}/${commentId}`,
-//         {
-//           method: "DELETE",
-//         }
-//       );
-//       if (!response.ok) throw new Error("Failed to delete comment");
-//       const updatedComments = await response.json();
-//       setComments(updatedComments);
-//     } catch (error) {
-//       console.error("Error deleting comment:", error);
-//     }
-//   };
+  //   const handleDeleteComment = async (commentId) => {
+  //     try {
+  //       const response = await fetch(
+  //         `http://localhost:3004/api/comment/delete${_id}/${commentId}`,
+  //         {
+  //           method: "DELETE",
+  //         }
+  //       );
+  //       if (!response.ok) throw new Error("Failed to delete comment");
+  //       const updatedComments = await response.json();
+  //       setComments(updatedComments);
+  //     } catch (error) {
+  //       console.error("Error deleting comment:", error);
+  //     }
+  //   };
 
   const saveEditedComment = async () => {
     try {
-      const response = await fetch(
-        `/api/comment/${_id}/${editingCommentId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: editCommentText }),
-        }
-      );
+      const response = await fetch(`/api/comment/${_id}/${editingCommentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: editCommentText }),
+      });
       if (!response.ok) throw new Error("Failed to edit comment");
       const updatedComments = await response.json();
       setComments(updatedComments);
@@ -176,7 +171,7 @@ const Viewall = (data) => {
                 <img
                   src={image}
                   alt={`Slide ${index + 1}`}
-                  className="w-full h-60 object-cover"
+                  className="w-full h-80 object-cover"
                 />
               </SwiperSlide>
             ))}
@@ -190,7 +185,7 @@ const Viewall = (data) => {
         </div>
 
         {/* Right Section: Comment & Rating Section */}
-        <div className="w-1/2 p-6 bg-white rounded-lg shadow-md">
+        <div className="w-1/2 p-2 bg-white rounded-lg shadow-md">
           {/* Rating Section */}
           <div className="flex items-center mb-6">
             <p className="text-lg font-semibold mr-4">Rating:</p>
@@ -315,29 +310,43 @@ const Viewall = (data) => {
 
       {/* Modal for Fullscreen Image Swiper */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[10] ">
-          <div className="bg-white p-2 w-3/4 h-3/4 overflow-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[10]">
+          <div className="relative bg-white rounded-lg shadow-lg w-3/4 max-w-4xl overflow-hidden">
+            {/* Close Button */}
             <button
               onClick={toggleModal}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-xl"
+              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-800 p-2 rounded-xl shadow-md transition-all"
+              aria-label="Close"
             >
-              Close
+              ✕
             </button>
-            <Swiper
-              navigation
-              pagination={{ clickable: true }}
-              className="h-full"
-            >
-              {imageUrls.map((image, index) => (
-                <SwiperSlide key={index}>
-                  <img
-                    src={image}
-                    alt={`Full Image ${index + 1}`}
-                    className="w-full h-96 object-cover"
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+
+            {/* Modal Content */}
+            <div className="p-2">
+              <h2 className="text-2xl font-semibold  text-center text-gray-800">
+                Image Gallery
+              </h2>
+              <div className="relative h-[70vh]">
+                <Swiper
+                  navigation
+                  pagination={{ clickable: true }}
+                  className="h-full rounded-md overflow-hidden"
+                >
+                  {imageUrls.map((image, index) => (
+                    <SwiperSlide
+                      key={index}
+                      className="flex justify-center items-center"
+                    >
+                      <img
+                        src={image}
+                        alt={`Full Image ${index + 1}`}
+                        className="w-auto max-h-full object-contain"
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            </div>
           </div>
         </div>
       )}

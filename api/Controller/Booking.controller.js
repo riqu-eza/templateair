@@ -5,15 +5,14 @@ import { sendEmail } from "../utils/email.js";
 import path from "path";
 import fs from "fs";
 import Booked from "../Model/booked.model.js";
-
+import Listing from "../Model/Listing.model.js";
 const getDirname = () => {
   return path.dirname(new URL(import.meta.url).pathname);
 };
 
-export const createBooking = async (req, res, next) => {
-  console.log(req.body); // Log the incoming request body
+export const createBooking = async (req, res) => {
+  console.log(req.body);
 
-  // Ensure formDetails is structured correctly
   const {
     checkInDate,
     checkOutDate,
@@ -21,9 +20,37 @@ export const createBooking = async (req, res, next) => {
     totalCost,
     guestNumber,
     formDetails,
+    manageremail,
   } = req.body;
 
   try {
+    // Generate the PDF as a Buffer
+    const pdfDoc = new PDFDocument();
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      const buffers = [];
+      pdfDoc.on("data", buffers.push.bind(buffers));
+      pdfDoc.on("end", () => resolve(Buffer.concat(buffers)));
+      pdfDoc.on("error", reject);
+
+      // Add content to the PDF
+      pdfDoc.fontSize(25).text("Booking Receipt", { align: "center" });
+      pdfDoc.moveDown();
+      pdfDoc.fontSize(14).text(`Check-In Date: ${checkInDate}`);
+      pdfDoc.text(`Check-Out Date: ${checkOutDate}`);
+      pdfDoc.text(`Total Nights: ${totalNights}`);
+      pdfDoc.text(`Total Cost: $${totalCost}`);
+      pdfDoc.text(`Number of Guests: ${guestNumber}`);
+      pdfDoc.text(
+        `Guest Name: ${formDetails.firstName} ${formDetails.lastName}`
+      );
+      pdfDoc.text(`Contact Email: ${formDetails.email}`);
+      pdfDoc
+        .moveDown()
+        .text("Thank you for your booking!", { align: "center" });
+      pdfDoc.end();
+    });
+
+    // Create and save the new booking
     const newBooking = new Booking({
       checkInDate,
       checkOutDate,
@@ -31,116 +58,100 @@ export const createBooking = async (req, res, next) => {
       totalCost,
       guestNumber,
       formDetails,
+      manageremail,
+      receipt: pdfBuffer, // Save the PDF buffer in the database
     });
 
-    const listing = await newBooking.save();
+    const book = await newBooking.save();
 
-    const receiptsDir = path.resolve(getDirname(), "../Receipts");
-    if (!fs.existsSync(receiptsDir)) {
-      fs.mkdirSync(receiptsDir, { recursive: true }); // Create directory if it doesn't exist
-    }
+    // Email bodies
 
-    const pdfFilePath = path.join(receiptsDir, `${newBooking._id}-receipt.pdf`);
-    console.log(`PDF will be saved to: ${pdfFilePath}`);
+    const emailBody = `
+<h2 style="color: #4CAF50;">Your Booking Confirmation</h2>
+<p>Dear ${formDetails.firstName} ${formDetails.lastName},</p>
+<p>Thank you for choosing our service! Your booking has been successfully confirmed.</p>
+<p>Here are the details of your booking:</p>
+<table style="width: 100%; border-collapse: collapse;">
+    <tr>
+        <th style="border: 1px solid #ddd; padding: 8px;">Detail</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Information</th>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Check-In Date:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${checkInDate}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Check-Out Date:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${checkOutDate}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Total Nights:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${totalNights}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Total Cost:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">$${totalCost}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Guests:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${guestNumber}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Contact Email:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${formDetails.email}</td>
+    </tr>
+</table>
+<p>We look forward to hosting you!</p>
+`;
 
-    const pdfDoc = new PDFDocument();
-    const writeStream = fs.createWriteStream(pdfFilePath); // Create a writable stream for the PDF
-    pdfDoc.pipe(writeStream); // Pipe directly to file
+    const emailBodyToManager = `
+<h2 style="color: #4CAF50;">New Booking Notification</h2>
+<p>Dear Property Manager,</p>
+<p>A new booking has been made for your property. Here are the details:</p>
+<table style="width: 100%; border-collapse: collapse;">
+    <tr>
+        <th style="border: 1px solid #ddd; padding: 8px;">Detail</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Information</th>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Check-In Date:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${checkInDate}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Check-Out Date:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${checkOutDate}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Guests:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${guestNumber}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Booker's Name:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${formDetails.firstName} ${formDetails.lastName}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;"><strong>Booker's Email:</strong></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${formDetails.email}</td>
+    </tr>
+</table>
+<p>Please review the booking at your earliest convenience.</p>
+`;
 
-    // Add content to the PDF
-    pdfDoc.fontSize(25).text("Booking Receipt", { align: "center" });
-    pdfDoc.moveDown();
-    pdfDoc.fontSize(14).text(`Check-In Date: ${checkInDate}`);
-    pdfDoc.text(`Check-Out Date: ${checkOutDate}`);
-    pdfDoc.text(`Total Nights: ${totalNights}`);
-    pdfDoc.text(`Total Cost: $${totalCost}`);
-    pdfDoc.text(`Number of Guests: ${guestNumber}`);
-    pdfDoc.text(`Guest Name: ${formDetails.firstName} ${formDetails.lastName}`);
-    pdfDoc.text(`Contact Email: ${formDetails.email}`);
-    pdfDoc.moveDown().text("Thank you for your booking!", { align: "center" });
+    // Send emails
+    await sendEmail(formDetails.email, "Your Booking Confirmation", emailBody);
+    await sendEmail(
+      manageremail,
+      "New Booking Notification",
+      emailBodyToManager
+    );
 
-    // Finalize the PDF
-    pdfDoc.end();
-
-    // Wait for the write stream to finish
-    writeStream.on('finish', async () => {
-      console.log("PDF created successfully.");
-
-      // Check if the PDF was created successfully
-      if (!fs.existsSync(pdfFilePath)) {
-        throw new Error(`PDF file not created at path: ${pdfFilePath}`);
-      }
-
-      const emailBody = `
-      <h2 style="color: #4CAF50;">Your Booking Confirmation</h2>
-      <p>Dear ${formDetails.firstName} ${formDetails.lastName},</p>
-      <p>Thank you for choosing our service! Your booking has been confirmed. Here are the details:</p>
-      <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-              <th style="border: 1px solid #ddd; padding: 8px;">Detail</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Information</th>
-          </tr>
-          <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Check-In Date:</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">${checkInDate}</td>
-          </tr>
-          <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Check-Out Date:</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">${checkOutDate}</td>
-          </tr>
-          <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Total Nights:</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">${totalNights}</td>
-          </tr>
-          <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Total Cost:</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">$${totalCost}</td>
-          </tr>
-          <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Guests:</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">${guestNumber}</td>
-          </tr>
-          <tr>
-              <td style="border: 1px solid #ddd; padding: 8px;"><strong>Contact Email:</strong></td>
-              <td style="border: 1px solid #ddd; padding: 8px;">${formDetails.email}</td>
-          </tr>
-      </table>
-      <p>We look forward to hosting you!</p>
-      <p>Best regards,<br/>The Booking Team</p>
-      `;
-
-      const attachments = [
-        {
-          filename: `${newBooking._id}-receipt.pdf`,
-          path: pdfFilePath, // Path to the PDF
-        },
-      ];
-      // Send confirmation email to the customer
-      await sendEmail(
-        formDetails.email,
-        "Your Booking Confirmation",
-        emailBody,
-        attachments
-      );
-      
-      // Save the new booking
-      console.log("Saved booking:", listing); // Log the saved booking
-      return res.status(201).json(listing); // Return success response
-    });
-
-    // Handle write stream errors
-    writeStream.on('error', (err) => {
-      console.error("Error writing PDF file:", err);
-      return res.status(500).json({ message: "Error creating PDF", error: err });
-    });
-    
+    console.log("Booking saved and emails sent.");
+    return res.status(201).json(book);
   } catch (error) {
-    console.error("Error creating booking:", error); // Log the error for debugging
-    return res.status(500).json({ message: "Error creating booking", error }); // Return error response
+    console.error("Error creating booking:", error);
+    return res.status(500).json({ message: "Error creating booking", error });
   }
 };
-
-
 
 export const CheckAvailability = async (req, res) => {
   try {
@@ -166,7 +177,7 @@ export const CheckAvailability = async (req, res) => {
 
     // Query the database to check if any dates in `requestedDates` are already booked
     const existingBookings = await Booked.find({
-      dates: { $in: requestedDates } // Check if any requested date exists in the booked dates
+      dates: { $in: requestedDates }, // Check if any requested date exists in the booked dates
     });
 
     // If any existing bookings are found, availability is false; otherwise, it's true
@@ -177,7 +188,9 @@ export const CheckAvailability = async (req, res) => {
     }
   } catch (error) {
     console.error("Error checking availability:", error);
-    return res.status(500).json({ error: "An error occurred. Please try again later." });
+    return res
+      .status(500)
+      .json({ error: "An error occurred. Please try again later." });
   }
 };
 
@@ -189,8 +202,7 @@ export const GetAllBookings = async (req, res) => {
     // Respond with the sorted bookings
     res.status(200).json(bookings);
   } catch (error) {
-    console.error('Error fetching bookings:', error);
-    res.status(500).json({ message: 'Error fetching bookings' });
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: "Error fetching bookings" });
   }
 };
-

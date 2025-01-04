@@ -4,13 +4,14 @@ import Amenity from "../utility/amenity";
 import BookingForm from "../utility/BookingForm";
 import Footer from "../components/footer";
 import Viewall from "../utility/images_commect";
+// import Map from "../components/map";
 
 const Home = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [bookingData, setBookingData] = useState({
     checkIn: "",
     checkOut: "",
@@ -23,9 +24,7 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "/api/listing/getlisting"
-        );
+        const response = await fetch("/api/listing/getlisting");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -41,7 +40,6 @@ const Home = () => {
 
     fetchData();
   }, []);
-
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -86,7 +84,7 @@ const Home = () => {
   if (error) return <p>Error: {error}</p>;
 
   const property = data.length > 0 ? data[0] : null;
-
+  const rules = property.rules;
   // Safely access amenities and rules, defaulting to an empty array if `property` is `null`
   const amenitiesArray =
     property?.amenities?.[0]?.split(",").map((amenity) => amenity.trim()) || [];
@@ -280,12 +278,9 @@ const Home = () => {
                     ✔️ We always welcome our visitors @{property.checkInTime}{" "}
                     and say a warm goodbye @{property.checkOutTime}
                   </p>
-                  {/* <div className="mt-4">
+                  <div className="mt-4">
                     {rules.length > 0 && (
                       <>
-                        <h5 className="text-center font-semibold mb-2">
-                          Property Rules
-                        </h5>
                         <ul className="list-none space-y-2">
                           {rules.map((rule, index) => (
                             <li key={index} className="flex items-center gap-2">
@@ -296,18 +291,13 @@ const Home = () => {
                         </ul>
                       </>
                     )}
-                  </div> */}
+                  </div>
                 </div>
               </div>
 
               {/* Additional Content */}
               <div className="flex-1 border-t p-2 flex items-center justify-center  h-1/2">
-                <div className="col-span-full">
-                  <h4 className="text-lg font-semibold text-blue-700 mb-2">
-                    view on map
-                  </h4>
-                 
-                </div>
+               
               </div>
             </div>
           </>
@@ -324,6 +314,7 @@ const Home = () => {
             checkOutDate: bookingData.checkOut,
             guestNumber: bookingData.guests,
           }}
+          manageremail={property.email}
         />
       </div>
       <div>

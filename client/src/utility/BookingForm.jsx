@@ -2,11 +2,7 @@
 // BookingForm.js
 import { useState, useEffect } from "react";
 
-const BookingForm = ({ price, initialData }) => {
-  // const [showBookingOverlay, setShowBookingOverlay] = useState(false);
-
-  // const [phoneNumber, setPhoneNumber] = useState(""); // for MPesa
-  // const [paymentStatus, setPaymentStatus] = useState(null);
+const BookingForm = ({ price, initialData,manageremail }) => {
   const [checkInDate, setCheckInDate] = useState(initialData?.checkInDate || "");
   const [checkOutDate, setCheckOutDate] = useState(initialData?.checkOutDate || "");
   
@@ -53,13 +49,14 @@ const BookingForm = ({ price, initialData }) => {
       guestNumber,
       totalNights,
       totalCost,
+      manageremail,
       formDetails, // Ensure formDetails is included here
     };
 
     console.log("bookingData", bookingData); // Log for debugging
 
     try {
-      const response = await fetch("http://localhost:3004/api/booking/create", {
+      const response = await fetch("/api/booking/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,45 +90,11 @@ const BookingForm = ({ price, initialData }) => {
       alert("There was an error submitting the booking: " + error.message);
     }
   };
-  // const handleMPesaPayment = async () => {
-  //   try {
-  //     console.log("Mpesa transaction underway...");
-
-  //     // Call backend to trigger MPesa payment request
-  //     const paymentResponse = await fetch(
-  //       "/api/payments/Mpesapay",
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ phoneNumber, amount: totalCost }), // Use formData.totalPrice directly
-  //       }
-  //     );
-
-  //     console.log("body", paymentResponse);
-
-  //     if (!paymentResponse.ok) {
-  //       throw new Error(`HTTP error! status: ${paymentResponse.status}`);
-  //     }
-
-  //     const paymentData = await paymentResponse.json();
-  //     console.log("Payment response", paymentData);
-
-  //     if (paymentData.status === "pending") {
-  //       setPaymentStatus("Pending confirmation from MPesa.");
-  //     } else {
-  //       setPaymentStatus("Payment failed.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during MPesa payment:", error);
-  //     setPaymentStatus(
-  //       "An error occurred during the payment process. Please try again."
-  //     );
-  //   }
-  // };
+  // 
 
   return (
     <div className="border-black border-2 rounded-md p-4 w-full max-w-5xl justify-center mx-auto ">
-      <h4 className="text-lg font-semibold mb-4">Book Now</h4>
+      <h4 className="text-lg font-semibold mb-4">Book Now <span className="text-italic text-green-500" > ksh {price} per night</span> </h4>
 
       {/* Booking Details */}
       <div className="flex gap-1 ">
@@ -223,47 +186,8 @@ const BookingForm = ({ price, initialData }) => {
           <p>
             Stay From: {checkInDate || "N/A"} to {checkOutDate || "N/A"}
           </p>
-          <p>Total Cost: ${totalCost}</p>
-          {/* <div className="mt-6">
-            <h1 className="text-xl font-bold ">Pay with</h1>
-            <div className="flex flex-col items-center">
-              <div className="w-full md:w-1/2">
-                <button
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-all"
-                  onClick={() => setShowBookingOverlay(true)}
-                >
-                  Mpesa
-                </button>
-                {showBookingOverlay && (
-                  <div className="payment-section bg-gray-100  rounded-lg shadow-md">
-                    <h2 className="text-lg font-thin mb-3">
-                      Complete Your Payment with MPesa
-                    </h2>
-                    <input
-                      type="tel"
-                      placeholder="Enter MPesa phone number"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      required
-                      className="w-full p-2 border border-gray-300 rounded mb-4"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleMPesaPayment}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-all"
-                    >
-                      Pay via MPesa
-                    </button>
-                    {paymentStatus && (
-                      <p className="mt-4 text-center text-gray-600 font-medium">
-                        {paymentStatus}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div> */}
+          <p>Total Cost: Ksh {totalCost}</p>
+         
           <button
             type="button"
             className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
