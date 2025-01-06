@@ -91,6 +91,9 @@ const Home = () => {
   // const rules = property?.rules
   //   ? property.rules.split(",").map((rule) => rule.trim())
   //   : [];
+  const mapIframe = property.location.mapurl[0];
+
+  const srcUrl = mapIframe.match(/src="([^"]*)"/)?.[1];
 
   return (
     <>
@@ -296,8 +299,16 @@ const Home = () => {
               </div>
 
               {/* Additional Content */}
-              <div className="flex-1 border-t p-2 flex items-center justify-center  h-1/2">
-               
+              <div className="flex-1 border-t p-2 flex items-center justify-center h-1/2">
+                <iframe
+                  src={srcUrl}
+                  width="600"
+                  height="250"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </div>
             </div>
           </>

@@ -1,16 +1,6 @@
 import mongoose from "mongoose";
 
-const addressSchema = new mongoose.Schema({
-  lat: {
-    type: String,
-  },
-  lng: {
-    type: String,
-  },
-  location: {
-    type: String,
-  },
-});
+
 // Define the Location Schema
 const locationSchema = new mongoose.Schema({
   country: {
@@ -21,8 +11,8 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
-    type: addressSchema,
+  mapurl: {
+    type: [String],
     required: false,
   },
 });

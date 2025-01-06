@@ -15,14 +15,14 @@ const Createproperty = () => {
   // Define state for each input field
   const [formData, setFormData] = useState({
     name: "",
-    email:'',
+    email: "",
     description: "",
     amenities: "",
     type: "",
     location: {
       country: "",
       county: "",
-      address: { lat: "", lng: "", location: "" },
+      mapurl: [],
     },
     pricePerNight: "",
     imageUrls: [],
@@ -158,30 +158,26 @@ const Createproperty = () => {
     const { name, value } = e.target;
 
     if (name.startsWith("location.")) {
-        const locationField = name.split(".")[1];
+      const locationField = name.split(".")[1];
 
-        setFormData((prev) => ({
-            ...prev,
-            location: {
-                ...prev.location,
-                [locationField]: value, // Update only the specific field
-                address: {
-                    ...prev.location.address // Ensure we keep the existing address structure
-                }
-            }
-        }));
+      setFormData((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          [locationField]: value, // Update only the specific field
+          address: {
+            ...prev.location.address, // Ensure we keep the existing address structure
+          },
+        },
+      }));
     } else {
-        // Update all other fields normally
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+      // Update all other fields normally
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
-};
-
-
-  
-  
+  };
 
   // Submit handler to post data to API
   const handleSubmit = async (e) => {
@@ -208,14 +204,14 @@ const Createproperty = () => {
       // Reset the form on successful submission
       setFormData({
         name: "",
-        email:"",
+        email: "",
         description: "",
         amenities: "",
         type: "",
         location: {
           country: "",
           county: "",
-          address: { lat: "", lng: "", location: "" },
+          mapurl: [],
         },
         pricePerNight: "",
         imageUrls: [],
@@ -234,9 +230,13 @@ const Createproperty = () => {
   return (
     <form className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-300 mt-8">
       {/* Heading */}
-      <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Add Property Information</h2>
-      <p className="text-center text-gray-600 mb-4">Fill out the details to add your property.</p>
-    
+      <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
+        Add Property Information
+      </h2>
+      <p className="text-center text-gray-600 mb-4">
+        Fill out the details to add your property.
+      </p>
+
       {/* Main Grid for Inputs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Property Name and Description */}
@@ -267,7 +267,29 @@ const Createproperty = () => {
           required
           className="border rounded p-2"
         />
-    
+       <div className="relative">
+  <label htmlFor="mapurl" className="block font-medium mb-2">
+    Map URL
+    <span
+      title="Open Google Maps > Share > Embed a map > Copy the embed URL"
+      className="ml-2 text-blue-500 cursor-pointer"
+    >
+      [?]
+    </span>
+  </label>
+  <Input
+    id="mapurl"
+    placeholder="Paste embed URL"
+    type="text"
+    name="location.mapurl"
+    value={formData.location.mapurl}
+    onChange={handleChange}
+    required
+    className="border rounded p-2 w-full"
+  />
+</div>
+
+
         {/* Amenities and Type Selection */}
         <Input
           placeholder="Enter amenities (e.g., Wi-Fi, Parking)"
@@ -287,13 +309,27 @@ const Createproperty = () => {
         >
           <option value="">Select type</option>
           {/* Add property types here */}
-          {["Studio Apartments", "One-Bedroom", "Two-Bedroom", "Three-Bedroom", "Four-Bedroom", "Five-Bedroom", "Cottages", "Cabins", "Farmhouse"].map((type) => (
-            <option key={type} value={type}>{type}</option>
+          {[
+            "Studio Apartments",
+            "One-Bedroom",
+            "Two-Bedroom",
+            "Three-Bedroom",
+            "Four-Bedroom",
+            "Five-Bedroom",
+            "Cottages",
+            "Cabins",
+            "Farmhouse",
+          ].map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
           ))}
         </select>
-    
+
         {/* Location Fields */}
-        <h4 className="col-span-full text-xl font-semibold text-blue-700 mt-6">Location Details</h4>
+        <h4 className="col-span-full text-xl font-semibold text-blue-700 mt-6">
+          Location Details
+        </h4>
         <Input
           placeholder="Enter country"
           type="text"
@@ -352,10 +388,12 @@ const Createproperty = () => {
           required
           className="col-span-full border rounded p-2"
         />
-    
+
         {/* Image Upload Section */}
         <div className="col-span-full">
-          <label className="block text-gray-700 font-bold mb-2">Upload Images (Max 6):</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Upload Images (Max 6):
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -363,8 +401,15 @@ const Createproperty = () => {
             onChange={(e) => setFiles(Array.from(e.target.files))}
             className="border rounded p-2"
           />
-          {imageUploadError && <p className="text-red-600">{imageUploadError}</p>}
-          <button type="button" onClick={handleImageSubmit} disabled={uploading} className="mt-2 bg-blue-500 text-white rounded p-2">
+          {imageUploadError && (
+            <p className="text-red-600">{imageUploadError}</p>
+          )}
+          <button
+            type="button"
+            onClick={handleImageSubmit}
+            disabled={uploading}
+            className="mt-2 bg-blue-500 text-white rounded p-2"
+          >
             {uploading ? "Uploading..." : "Upload Images"}
           </button>
         </div>
@@ -375,7 +420,11 @@ const Createproperty = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {formData.imageUrls.map((url, index) => (
               <div key={index} className="relative">
-                <img src={url} alt={`Uploaded ${index}`} className="w-full h-32 object-cover rounded" />
+                <img
+                  src={url}
+                  alt={`Uploaded ${index}`}
+                  className="w-full h-32 object-cover rounded"
+                />
                 <button
                   onClick={() => handleRemoveImage(index)}
                   className="absolute top-1 right-1 text-red-500"
@@ -390,10 +439,7 @@ const Createproperty = () => {
         {/* Google Map for Location Selection */}
         <div className="col-span-full mt-6">
           <h4 className="text-lg font-semibold">Select Location on Map:</h4>
-          <div
-            ref={mapRef}
-            className="h-64 w-full rounded border"
-          ></div>
+          <div ref={mapRef} className="h-64 w-full rounded border"></div>
         </div>
 
         {/* Submit Button */}
