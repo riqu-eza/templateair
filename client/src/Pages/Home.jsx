@@ -97,47 +97,51 @@ const Home = () => {
 
   return (
     <>
-      <div className="flex w-full gap-1 m-1 p-1">
-        <div className="w-1/3 p-2">
+      <div className="flex flex-wrap w-full gap-4 m-2 p-4 items-center justify-between">
+        {/* Property Name */}
+        <div className="flex items-center w-full md:w-auto">
           {property ? (
-            <h2 className="p-1 text-center font-[Mathitalic] text-2xl font-bold">
+            <h2 className="text-center font-[Mathitalic] text-2xl md:text-3xl font-bold">
               {property.name}
             </h2>
           ) : (
-            <p>No property data available.</p>
+            <p className="text-center text-lg text-gray-600">
+              No property data available.
+            </p>
           )}
         </div>
 
-        <div className="w-2/3 p-2 flex items-center">
-          <nav className="flex space-x-28 p-1 justify-evenly ml-80">
-            <Link to="/" className="p-1 hover:underline">
-              Home
-            </Link>
-            <Link
-              onClick={() =>
-                propertyDescriptionRef.current.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-              className="p-1 hover:underline"
-            >
-              About
-            </Link>
-
-            <Link
-              onClick={() =>
-                bookingFormRef.current.scrollIntoView({ behavior: "smooth" })
-              }
-              className="p-1 hover:underline"
-            >
-              Book Now
-            </Link>
-          </nav>
-        </div>
+        {/* Navigation Links */}
+        <nav className="flex flex-wrap gap-4 md:gap-12 w-full md:w-auto justify-center md:justify-end">
+          <Link
+            to="/"
+            className="px-4 py-2 hover:underline text-lg font-medium"
+          >
+            Home
+          </Link>
+          <Link
+            onClick={() =>
+              propertyDescriptionRef.current.scrollIntoView({
+                behavior: "smooth",
+              })
+            }
+            className="px-4 py-2 hover:underline text-lg font-medium"
+          >
+            About
+          </Link>
+          <Link
+            onClick={() =>
+              bookingFormRef.current.scrollIntoView({ behavior: "smooth" })
+            }
+            className="px-4 py-2 hover:underline text-lg font-medium"
+          >
+            Book Now
+          </Link>
+        </nav>
       </div>
 
       {/* Hero Image Section */}
-      <div className="relative h-[600px]">
+      <div className="relative h-[600px] sm:h-[400px] md:h-[500px] lg:h-[600px]">
         {property && property.imageUrls?.length > 0 && (
           <img
             src={property.imageUrls[0]}
@@ -145,11 +149,11 @@ const Home = () => {
             className="w-full h-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col gap-6 items-center justify-center">
-          <h1 className="text-white text-5xl font-bold text-center animate-slide-in">
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col gap-6 items-center justify-center p-4 sm:p-6">
+          <h1 className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold text-center animate-slide-in">
             Great Experiences Are Just Around the Corner
           </h1>
-          <p className="text-center text-xl text-white max-w-2xl">
+          <p className="text-center text-base sm:text-lg md:text-xl text-white max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl">
             Welcome to your serene escape! Enjoy the tranquility and comfort of
             this beautiful property, where every moment is an invitation to
             unwind and rejuvenate.
@@ -158,10 +162,10 @@ const Home = () => {
       </div>
 
       {/* Booking Form Overlay */}
-      <div className="relative flex justify-center -mt-16">
-        <div className="w-full max-w-3xl h-40 bg-white bg-opacity-90 p-4 rounded-lg shadow-lg flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 border border-gray-300">
+      <div className="relative flex justify-center -mt-16 p-4">
+        <div className="w-full max-w-4xl bg-white bg-opacity-90 p-6 rounded-lg shadow-lg flex flex-wrap items-center gap-4 border border-gray-300">
           {/* Check-in Input */}
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full sm:w-1/3">
             <label htmlFor="checkIn" className="text-sm text-gray-700">
               Check-in
             </label>
@@ -175,7 +179,7 @@ const Home = () => {
           </div>
 
           {/* Check-out Input */}
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full sm:w-1/3">
             <label htmlFor="checkOut" className="text-sm text-gray-700">
               Check-out
             </label>
@@ -189,7 +193,7 @@ const Home = () => {
           </div>
 
           {/* Guests Input */}
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full sm:w-1/4">
             <label htmlFor="guests" className="text-sm text-gray-700">
               Guests
             </label>
@@ -204,41 +208,50 @@ const Home = () => {
           </div>
 
           {/* Check Now Button */}
-          <button
-            onClick={checkAvailability}
-            className="p-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition duration-200"
-          >
-            Check Now
-          </button>
-          {message && <p className="mt-4 text-gray-700">{message}</p>}
+          <div className="w-full sm:w-auto flex justify-center">
+            <button
+              onClick={checkAvailability}
+              className="p-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition duration-200 w-full sm:w-auto"
+            >
+              Check Now
+            </button>
+          </div>
+
+          {/* Message */}
+          {message && (
+            <p className="w-full text-center mt-4 text-gray-700">{message}</p>
+          )}
         </div>
 
         {/* Availability Message */}
         {availability !== null && (
-          <div className="mt-4 text-center">
+          <div className="w-full mt-4 text-center">
             {availability ? (
-              <p className="text-green-500"></p>
+              <p className="text-green-500">Availability Confirmed</p>
             ) : (
-              <p className="text-red-500"></p>
+              <p className="text-red-500">Not Available</p>
             )}
           </div>
         )}
       </div>
 
       {/* Property Description */}
-      <div ref={propertyDescriptionRef} className="p-1 m-1 mt-12 flex gap-1">
+      <div
+        ref={propertyDescriptionRef}
+        className="p-1 m-1 mt-12 flex flex-col md:flex-row  gap-2 items-center justify-center"
+      >
         {property ? (
           <>
             {/* Description Section */}
-            <div className="w-1/2 h-[450px] p-2 text-center text-stone-500 flex flex-col justify-center items-center">
-              <p className="first-letter:font-thin first-letter:text-7xl">
+            <div className="w-full md:w-1/2 md:h-[450px] p-4 text-center text-stone-500 flex flex-col justify-center items-center">
+              <p className="first-letter:font-thin first-letter:text-5xl md:first-letter:text-7xl">
                 {property.description}
               </p>
             </div>
 
-            {/* Image Section with Fixed Size */}
-            <div className="w-1/2 p-1 flex justify-self-start items-center">
-              <div className="w-[400px] h-[450px] overflow-hidden p-1">
+            {/* Image Section */}
+            <div className="w-full md:w-1/2 p-4 flex justify-center items-center">
+              <div className="w-full max-w-[400px] md:h-[450px] overflow-hidden rounded-xl shadow-lg">
                 <img
                   src={property.imageUrls[1]}
                   alt={property.name}
@@ -248,76 +261,88 @@ const Home = () => {
             </div>
           </>
         ) : (
-          <p>No property data available.</p>
+          <p className="text-center text-stone-500">
+            No property data available.
+          </p>
         )}
       </div>
-      {/* Propert amenities and rules */}
-      <div className="p-1 m-1 mt-12 flex gap-1">
-        {property ? (
-          <>
-            <div className="w-1/2 p-1 flex justify-end items-center">
-              <div className="w-[400px] h-[450px] overflow-hidden p-1">
-                <img
-                  src={property.imageUrls[3]}
-                  alt={property.name}
-                  className="w-full h-full object-cover rounded-xl"
-                />
-              </div>
-            </div>
-            <div className="w-1/2 h-[450px] p-1 gap-1 text-stone-500 flex flex-col ">
-              <div className="flex gap-1 h-1/2  p-2">
-                <div className=" w-1/2">
-                  <p className="text-center font-bold">
-                    Amenities You Will Find
-                  </p>
-                  <div className="flex flex-wrap justify-center mt-2">
-                    {amenitiesArray.map((amenity, index) => (
-                      <Amenity key={index} amenity={amenity} />
-                    ))}
-                  </div>
-                </div>
-                <div className="w-1/2">
-                  <p className="text-left text-thin text-base ">
-                    ✔️ We always welcome our visitors @{property.checkInTime}{" "}
-                    and say a warm goodbye @{property.checkOutTime}
-                  </p>
-                  <div className="mt-4">
-                    {rules.length > 0 && (
-                      <>
-                        <ul className="list-none space-y-2">
-                          {rules.map((rule, index) => (
-                            <li key={index} className="flex items-center gap-2">
-                              <span className="text-green-500">✔️</span>
-                              <span>{rule}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
 
-              {/* Additional Content */}
-              <div className="flex-1 border-t p-2 flex items-center justify-center h-1/2">
-                <iframe
-                  src={srcUrl}
-                  width="600"
-                  height="250"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
-            </div>
-          </>
-        ) : (
-          <p>No property data available.</p>
-        )}
+      {/* Propert amenities and rules */}
+      <div className="p-4 mt-12 flex flex-col md:flex-row gap-4">
+  {property ? (
+    <>
+      {/* Image Section */}
+      <div className="w-full md:w-1/2 flex justify-center items-center">
+        <div className="w-full max-w-[400px] md:h-[450px] overflow-hidden p-2">
+          <img
+            src={property.imageUrls[3]}
+            alt={property.name}
+            className="w-full h-full object-cover rounded-xl"
+          />
+        </div>
       </div>
+
+      {/* Amenities and Rules Section */}
+      <div className="w-full md:w-1/2 md:h-[450px] p-2 flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row gap-4 h-1/2">
+          {/* Amenities */}
+          <div className="w-full md:w-1/2">
+            <p className="text-center font-bold">Amenities You Will Find</p>
+            <div className="flex flex-wrap justify-center mt-2">
+              {amenitiesArray.map((amenity, index) => (
+                <Amenity key={index} amenity={amenity} />
+              ))}
+            </div>
+          </div>
+
+          {/* Rules */}
+          <div className="w-full md:w-1/2">
+            <p className="text-left text-base">
+              ✔️ We always welcome our visitors @{property.checkInTime}{" "}
+              and say a warm goodbye @{property.checkOutTime}
+            </p>
+            <div className="mt-4">
+              {rules.length > 0 && (
+                <ul className="list-none space-y-2">
+                  {rules.map((rule, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <span className="text-green-500">✔️</span>
+                      <span>{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="border-t p-2 flex items-center justify-center h-1/2">
+          <iframe
+            src={srcUrl}
+            width="100%"
+            height="250"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </>
+  ) : (
+    <p className="text-center w-full text-stone-500">
+      No property data available.
+    </p>
+  )}
+</div>
+
+
       {/*booking section  */}
-      <div ref={bookingFormRef}>
+      <div
+        ref={bookingFormRef}
+        className="p-4 mt-8 flex justify-center items-center w-full bg-gray-100 rounded-lg shadow-md"
+      >
         <BookingForm
           price={property.pricePerNight}
           initialData={{
@@ -328,6 +353,7 @@ const Home = () => {
           manageremail={property.email}
         />
       </div>
+
       <div>
         <Viewall property={property} />
       </div>

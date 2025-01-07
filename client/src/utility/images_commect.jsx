@@ -156,162 +156,30 @@ const Viewall = (data) => {
   //     return <div>Error: {error}</div>;
   // }
   return (
-    <>
-      <div className="flex  p-1 m-3">
-        {/* Left Section: Image Display */}
-        <div className="w-1/2 border-r border-gray-600 p-4">
-          <p className="text-lg font-semibold mb-2">{name}</p>
-          <Swiper
-            spaceBetween={10}
-            slidesPerView={1}
-            pagination={{ clickable: true }}
-          >
-            {imageUrls.map((image, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image}
-                  alt={`Slide ${index + 1}`}
-                  className="w-full h-80 object-cover"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          <button
-            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-            onClick={toggleModal}
-          >
-            Show All Images
-          </button>
-        </div>
-
-        {/* Right Section: Comment & Rating Section */}
-        <div className="w-1/2 p-2 bg-white rounded-lg shadow-md">
-          {/* Rating Section */}
-          <div className="flex items-center mb-6">
-            <p className="text-lg font-semibold mr-4">Rating:</p>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <AiFillStar
-                  key={i}
-                  color={i < Math.round(rating) ? "#FFD700" : "#C0C0C0"}
-                  className="text-2xl"
-                />
-              ))}
-            </div>
-            <p className="ml-3 text-lg text-gray-600">
-              ({rating.toFixed(1)}/5)
-            </p>
-          </div>
-
-          {/* User Rating Input */}
-          <div className="mb-6">
-            <p className="text-lg font-semibold mb-2">Your Rating:</p>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <AiFillStar
-                  key={i}
-                  color={i < userRating ? "#FFD700" : "#C0C0C0"}
-                  onClick={() => setUserRating(i + 1)}
-                  className="text-2xl cursor-pointer"
-                />
-              ))}
-            </div>
-            <button
-              onClick={handleRatingSubmit}
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg mt-3 w-full hover:bg-blue-700 transition duration-200"
-            >
-              Submit Rating
-            </button>
-          </div>
-
-          {/* Display Existing Comments */}
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-3">Comments</h2>
-            <div className="h-64 overflow-y-auto border-t border-b border-gray-200 py-3">
-              {comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  className="flex justify-between items-start border-b p-3 bg-gray-50 hover:bg-gray-100 transition duration-150"
-                >
-                  <div>
-                    {editingCommentId === comment._id ? (
-                      // Show the edit input only for the specific comment in edit mode
-                      <>
-                        <input
-                          type="text"
-                          value={editCommentText}
-                          onChange={(e) => setEditCommentText(e.target.value)}
-                          className="border p-2 w-full rounded-md"
-                        />
-                        <div className="flex space-x-2 mt-2">
-                          <button
-                            onClick={saveEditedComment}
-                            className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition duration-200"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setEditingCommentId(null)} // Exit edit mode
-                            className="bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition duration-200"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      // Show comment text and buttons when not in edit mode
-                      <>
-                        <p className="text-gray-800">{comment.text}</p>
-                        <small className="text-gray-500 block">
-                          {new Date(comment.date).toLocaleString()}
-                        </small>
-                        {/* <div className="flex space-x-2 mt-2">
-                          <button
-                            onClick={() =>
-                              startEditingComment(comment._id, comment.text)
-                            }
-                            className="text-blue-600 hover:text-blue-700 transition duration-200"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteComment(comment._id)}
-                            className="text-red-600 hover:text-red-700 transition duration-200"
-                          >
-                            Delete
-                          </button>
-                        </div> */}
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Add New Comment */}
-          <div className="mt-4">
-            <input
-              type="text"
-              placeholder="Enter your comment"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="border p-3 w-full rounded-md focus:outline-none focus:border-blue-500"
+    <div className="flex flex-col md:flex-row p-4 gap-4">
+    {/* Left Section: Image Display */}
+    <div className="w-full md:w-1/2 border-r md:border-gray-600 p-4">
+      <p className="text-lg font-semibold mb-2">{name}</p>
+      <Swiper spaceBetween={10} slidesPerView={1} pagination={{ clickable: true }}>
+        {imageUrls.map((image, index) => (
+          <SwiperSlide key={index}>
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className="w-full h-80 object-cover rounded-md"
             />
-            <button
-              onClick={handleCommentSubmit}
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg mt-3 w-full hover:bg-blue-700 transition duration-200"
-            >
-              Submit Comment
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal for Fullscreen Image Swiper */}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <button
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full md:w-auto"
+        onClick={toggleModal}
+      >
+        Show All Images
+      </button>
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[10]">
-          <div className="relative bg-white rounded-lg shadow-lg w-3/4 max-w-4xl overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-4xl">
             {/* Close Button */}
             <button
               onClick={toggleModal}
@@ -322,35 +190,136 @@ const Viewall = (data) => {
             </button>
 
             {/* Modal Content */}
-            <div className="p-2">
-              <h2 className="text-2xl font-semibold  text-center text-gray-800">
+            <div className="p-4">
+              <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
                 Image Gallery
               </h2>
-              <div className="relative h-[70vh]">
-                <Swiper
-                  navigation
-                  pagination={{ clickable: true }}
-                  className="h-full rounded-md overflow-hidden"
-                >
-                  {imageUrls.map((image, index) => (
-                    <SwiperSlide
-                      key={index}
-                      className="flex justify-center items-center"
-                    >
-                      <img
-                        src={image}
-                        alt={`Full Image ${index + 1}`}
-                        className="w-auto max-h-full object-contain"
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              </div>
+              <Swiper
+                navigation
+                pagination={{ clickable: true }}
+                className="h-[70vh]"
+              >
+                {imageUrls.map((image, index) => (
+                  <SwiperSlide key={index} className="flex justify-center items-center">
+                    <img
+                      src={image}
+                      alt={`Full Image ${index + 1}`}
+                      className="w-auto max-h-full object-contain"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
+  
+    {/* Right Section: Comment & Rating Section */}
+    <div className="w-full md:w-1/2 p-4 bg-white rounded-lg shadow-md">
+      {/* Rating Section */}
+      <div className="flex items-center mb-6">
+        <p className="text-lg font-semibold mr-4">Rating:</p>
+        <div className="flex">
+          {[...Array(5)].map((_, i) => (
+            <AiFillStar
+              key={i}
+              color={i < Math.round(rating) ? "#FFD700" : "#C0C0C0"}
+              className="text-2xl"
+            />
+          ))}
+        </div>
+        <p className="ml-3 text-lg text-gray-600">({rating.toFixed(1)}/5)</p>
+      </div>
+  
+      {/* User Rating Input */}
+      <div className="mb-6">
+        <p className="text-lg font-semibold mb-2">Your Rating:</p>
+        <div className="flex">
+          {[...Array(5)].map((_, i) => (
+            <AiFillStar
+              key={i}
+              color={i < userRating ? "#FFD700" : "#C0C0C0"}
+              onClick={() => setUserRating(i + 1)}
+              className="text-2xl cursor-pointer"
+            />
+          ))}
+        </div>
+        <button
+          onClick={handleRatingSubmit}
+          className="bg-blue-600 text-white py-2 px-4 rounded-lg mt-3 w-full hover:bg-blue-700 transition duration-200"
+        >
+          Submit Rating
+        </button>
+      </div>
+  
+      {/* Display Existing Comments */}
+      <div className="mt-4">
+        <h2 className="text-xl font-semibold mb-3">Comments</h2>
+        <div className="h-64 overflow-y-auto border-t border-b border-gray-200 py-3">
+          {comments.map((comment) => (
+            <div
+              key={comment._id}
+              className="flex justify-between items-start border-b p-3 bg-gray-50 hover:bg-gray-100 transition duration-150"
+            >
+              <div>
+                {editingCommentId === comment._id ? (
+                  <>
+                    <input
+                      type="text"
+                      value={editCommentText}
+                      onChange={(e) => setEditCommentText(e.target.value)}
+                      className="border p-2 w-full rounded-md"
+                    />
+                    <div className="flex space-x-2 mt-2">
+                      <button
+                        onClick={saveEditedComment}
+                        className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition duration-200"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingCommentId(null)}
+                        className="bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition duration-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-800">{comment.text}</p>
+                    <small className="text-gray-500 block">
+                      {new Date(comment.date).toLocaleString()}
+                    </small>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+  
+      {/* Add New Comment */}
+      <div className="mt-4">
+        <input
+          type="text"
+          placeholder="Enter your comment"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          className="border p-3 w-full rounded-md focus:outline-none focus:border-blue-500"
+        />
+        <button
+          onClick={handleCommentSubmit}
+          className="bg-blue-600 text-white py-2 px-4 rounded-lg mt-3 w-full hover:bg-blue-700 transition duration-200"
+        >
+          Submit Comment
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  
   );
 };
 
