@@ -21,6 +21,8 @@ const BookingForm = ({ price, initialData, manageremail }) => {
     phone: "",
   });
 
+  const [loading, setLoading] = useState(false); // State for loading
+
   // Calculate total nights and cost
   useEffect(() => {
     if (checkInDate && checkOutDate) {
@@ -39,10 +41,12 @@ const BookingForm = ({ price, initialData, manageremail }) => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true); // Start loading
     // Validate form details
     const { firstName, lastName, email, phone } = formDetails;
     if (!firstName || !lastName || !email || !phone) {
       alert("Please fill in all personal details.");
+      setLoading(false); // Stop loading
       return; // Prevent submission if any required fields are missing
     }
 
@@ -54,7 +58,7 @@ const BookingForm = ({ price, initialData, manageremail }) => {
       totalNights,
       totalCost,
       manageremail,
-      formDetails, // Ensure formDetails is included here
+      formDetails,
     };
 
     console.log("bookingData", bookingData); // Log for debugging
@@ -92,9 +96,10 @@ const BookingForm = ({ price, initialData, manageremail }) => {
     } catch (error) {
       console.error("Error submitting booking:", error);
       alert("There was an error submitting the booking: " + error.message);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
-  //
 
   return (
     <div className="border-black border-2 rounded-md p-4 w-full max-w-5xl mx-auto bg-white shadow-lg">
@@ -197,10 +202,15 @@ const BookingForm = ({ price, initialData, manageremail }) => {
           <p className="text-gray-600">Total Cost: Ksh {totalCost}</p>
           <button
             type="button"
-            className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600 transition duration-200"
+            className={`py-2 px-4 rounded mt-4 transition duration-200 ${
+              loading
+                ? "bg-gray-500 text-white cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
             onClick={handleSubmit}
+            disabled={loading}
           >
-            Submit Booking
+            {loading ? "Submitting..." : "Submit Booking"}
           </button>
         </div>
       </div>
