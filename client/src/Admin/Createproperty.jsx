@@ -267,28 +267,27 @@ const Createproperty = () => {
           required
           className="border rounded p-2"
         />
-       <div className="relative">
-  <label htmlFor="mapurl" className="block font-medium mb-2">
-    Map URL
-    <span
-      title="Open Google Maps > Share > Embed a map > Copy the embed URL"
-      className="ml-2 text-blue-500 cursor-pointer"
-    >
-      [?]
-    </span>
-  </label>
-  <Input
-    id="mapurl"
-    placeholder="Paste embed URL"
-    type="text"
-    name="location.mapurl"
-    value={formData.location.mapurl}
-    onChange={handleChange}
-    required
-    className="border rounded p-2 w-full"
-  />
-</div>
-
+        <div className="relative">
+          <label htmlFor="mapurl" className="block font-medium mb-2">
+            Map URL
+            <span
+              title="Open Google Maps > Share > Embed a map > Copy the embed URL"
+              className="ml-2 text-blue-500 cursor-pointer"
+            >
+              [?]
+            </span>
+          </label>
+          <Input
+            id="mapurl"
+            placeholder="Paste embed URL"
+            type="text"
+            name="location.mapurl"
+            value={formData.location.mapurl}
+            onChange={handleChange}
+            required
+            className="border rounded p-2 w-full"
+          />
+        </div>
 
         {/* Amenities and Type Selection */}
         <Input

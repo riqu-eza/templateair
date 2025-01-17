@@ -47,7 +47,7 @@ const BookingForm = ({ price, initialData, manageremail }) => {
     if (!firstName || !lastName || !email || !phone) {
       alert("Please fill in all personal details.");
       setLoading(false); // Stop loading
-      return; // Prevent submission if any required fields are missing
+      return;
     }
 
     // Form data to send to the API

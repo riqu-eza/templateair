@@ -5,6 +5,7 @@ import AdminAddBooking from "./Admin/Adminadddate";
 import Admin from "./Admin/Admin";
 import BookingForm from "./utility/BookingForm";
 import Viewbookings from "./Admin/Viewbookings";
+import Managelisting from "./Admin/ManageListing";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/book-date" element={<AdminAddBooking />}></Route>
         <Route path="/booking" element={<BookingForm />} />
         <Route path="/viewbookings" element={<Viewbookings />}></Route>
+        <Route path="/managelisting" element={<Managelisting/>} ></Route>
       </Routes>
     </BrowserRouter>
   );
